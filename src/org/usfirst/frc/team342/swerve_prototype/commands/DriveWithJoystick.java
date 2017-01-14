@@ -1,5 +1,7 @@
 package org.usfirst.frc.team342.swerve_prototype.commands;
 
+import org.usfirst.frc.team342.swerve_prototype.subsystems.Drivesystem;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -14,7 +16,7 @@ private Drivesystem drive;
 	private Joystick joystick;
 	
 	public DriveWithJoystick (){
-		drive = DriveSystem.getInstance();
+		drive = Drivesystem.getInstance();
 		joystick = new Joystick(JOY_STICK);
 		
 
@@ -29,8 +31,20 @@ private Drivesystem drive;
 	@Override
 	protected void execute() {
 		// TODO Auto-generated method stub
+		double angle = Math.atan(joystick.getRawAxis(1)/joystick.getRawAxis(0));
+		double magnitude = (joystick.getRawAxis(1)*joystick.getRawAxis(1))+(joystick.getRawAxis(0)*joystick.getRawAxis(0));
+		magnitude=Math.sqrt(magnitude);
+
+		if (Math.abs(magnitude) < DEAD_ZONE) {
+			magnitude = 0;
+		}
+
 		
+		
+
+		drive.polar (magnitude, angle);
 	}
+	
 
 	@Override
 	protected boolean isFinished() {
