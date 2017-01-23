@@ -1,5 +1,6 @@
 package org.usfirst.frc.team342.swerve_prototype;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 
 
@@ -8,7 +9,11 @@ import edu.wpi.first.wpilibj.buttons.Button;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-    //// CREATING BUTTONS
+	
+	private static final OI instance = new OI();
+	public Joystick stick;
+	
+	//// CREATING BUTTONS
     // One type of button is a joystick button which is any button on a joystick.
     // You create one by telling it which joystick it's on and which button
     // number it is.
@@ -34,5 +39,13 @@ public class OI {
     // Start the command when the button is released  and let it run the command
     // until it is finished as determined by it's isFinished method.
     // button.whenReleased(new ExampleCommand());
+	
+	private OI(){
+		stick = new Joystick (0);
+	}
+	
+	public static OI getInstance(){
+		return instance;
+	}
 }
 

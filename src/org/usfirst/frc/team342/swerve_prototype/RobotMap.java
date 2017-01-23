@@ -6,6 +6,9 @@ package org.usfirst.frc.team342.swerve_prototype;
  * floating around.
  */
 public class RobotMap {
+	public static final int Servo1 = 1;
+	public static final int Servo2 = 2;
+	
     // For example to map the left and right motors, you could define the
     // following variables to use with your drivetrain subsystem.
     // public static int leftMotor = 1;

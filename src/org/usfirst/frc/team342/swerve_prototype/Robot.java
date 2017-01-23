@@ -1,13 +1,14 @@
 
 package org.usfirst.frc.team342.swerve_prototype;
 
+import org.usfirst.frc.team342.swerve_prototype.commands.DoNothing;
+import org.usfirst.frc.team342.swerve_prototype.commands.RotateCamera;
+import org.usfirst.frc.team342.swerve_prototype.subsystems.CamraSystem;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-
-import org.usfirst.frc.team342.swerve_prototype.commands.DoNothing;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,17 +22,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 
 
-	public static OI oi;
+	private OI oi;
+	private CamraSystem camControl;
 
     Command autonomousCommand;
     SendableChooser chooser;
-
+    
+    Command rotateCamera;
+    
+    public Robot(){
+    	oi = OI.getInstance();
+    	camControl = CamraSystem.getInstance();
+    }
+    
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-		oi = new OI();
         chooser = new SendableChooser();
         chooser.addDefault("Default Auto", new DoNothing());
 //        chooser.addObject("My Auto", new MyAutoCommand());
@@ -91,6 +99,7 @@ public class Robot extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         if (autonomousCommand != null) autonomousCommand.cancel();
+        rotateCamera = new RotateCamera();
     }
 
     /**
@@ -98,6 +107,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        rotateCamera.start();
     }
     
     /**
