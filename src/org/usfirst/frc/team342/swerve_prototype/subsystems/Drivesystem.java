@@ -16,4 +16,9 @@ public static Drivesystem getInstance(){
 public void polar (double angle, double maginitude ){
 	//TODO: FIX THIS ITS BROKEN
 }
+public void AngleAdjust (int number, double speed){
+	//TODO: THIS NEEDS TO DRIVE AN ANGLE MOTOR BASED ON THE NUMBER AND THE SPEED
+}
+
+
 }
