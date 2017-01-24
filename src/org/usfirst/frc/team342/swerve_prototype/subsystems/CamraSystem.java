@@ -16,7 +16,7 @@ public class CamraSystem extends Subsystem {
 	@Override
 	protected void initDefaultCommand() {
 		// TODO Auto-generated method stub
-		
+		//guber
 	}
 }
 
