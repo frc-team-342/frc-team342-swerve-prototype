@@ -61,24 +61,72 @@ public class Drivesystem extends Subsystem {
 			Talon = FLTurn;
 		}
 		if (Talon != null && Talon.getControlMode() == CANTalon.TalonControlMode.Voltage) {
-		  //Talon.setControlMode(CANTalon.TalonControlMode.Voltage.value);
+			// Talon.setControlMode(CANTalon.TalonControlMode.Voltage.value);
 			Talon.set(speed);
 		}
 	}
 
-	public void DriveWheels(double speed) {
-/*		if (FRDrive.getControlMode() == BRDrive.getControlMode() && 
-			FRDrive.getControlMode() == FLDrive.getControlMode() &&
-		    FRDrive.getControlMode() == BLDrive.getControlMode()) {
-		}// do FRDrive.getCont... == CANTalon.Talon...Mode.Voltage 
-		FRDrive.set(speed);
-		BRDrive.set(speed);
-		FLDrive.set(speed);
-		FRDrive.set(speed);
-	*/
+	public void DriveWheelsVolts(double speed) {
+		if (FRDrive.getControlMode() == CANTalon.TalonControlMode.Voltage
+				&& FRDrive.getControlMode() == BRDrive.getControlMode()
+				&& FRDrive.getControlMode() == FLDrive.getControlMode()
+				&& FRDrive.getControlMode() == BLDrive.getControlMode()) {
+
+			FRDrive.set(speed);
+			BRDrive.set(speed);
+			FLDrive.set(speed);
+			FRDrive.set(speed);
+
+		}
+	}
+
+	public void StopDrive() {
+
+		if (FRTurn.getControlMode() == CANTalon.TalonControlMode.Position
+				&& FRTurn.getControlMode() == BRTurn.getControlMode()
+				&& FRTurn.getControlMode() == FLTurn.getControlMode()
+				&& FRTurn.getControlMode() == BLTurn.getControlMode()) {
+			// position mode
+			FRTurn.set(FRTurn.getPosition());
+			FLTurn.set(FLTurn.getPosition());
+			BRTurn.set(FRTurn.getPosition());
+			BLTurn.set(BLTurn.getPosition());
+
+		}
+		else {
+			// not position mode
+			FRTurn.set(0.0);
+			BRTurn.set(0.0);
+			FLTurn.set(0.0);
+			FRTurn.set(0.0);
+
+		}
+	
+	
+	
+	}
+
+	public void StopTurn(){
+		if (FRDrive.getControlMode() == CANTalon.TalonControlMode.Position
+				&& FRDrive.getControlMode() == BRDrive.getControlMode()
+				&& FRDrive.getControlMode() == FLDrive.getControlMode()
+				&& FRDrive.getControlMode() == BLDrive.getControlMode()) {
+			// position mode
+			FRDrive.set(FRDrive.getPosition());
+			FLDrive.set(FLDrive.getPosition());
+			BRDrive.set(FRDrive.getPosition());
+			BLDrive.set(BLDrive.getPosition());
+
+		}
+		else {
+			// not position mode
+			FRturn.set(0.0);
+			BRDrive.set(0.0);
+			FLDrive.set(0.0);
+			FRDrive.set(0.0);
+
+		}
+	
 		
 	}
-	
-
 }
-
