@@ -120,7 +120,7 @@ public class Drivesystem extends Subsystem {
 		}
 		else {
 			// not position mode
-			FRturn.set(0.0);
+			FRTurn.set(0.0);
 			BRDrive.set(0.0);
 			FLDrive.set(0.0);
 			FRDrive.set(0.0);
