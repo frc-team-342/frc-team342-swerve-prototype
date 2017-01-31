@@ -31,15 +31,16 @@ private Drivesystem drive;
 	@Override
 	protected void execute() {
 		// TODO Auto-generated method stub
-		double angle = Math.atan(joystick.getRawAxis(1)/joystick.getRawAxis(0));
-		double magnitude = (joystick.getRawAxis(1)*joystick.getRawAxis(1))+(joystick.getRawAxis(0)*joystick.getRawAxis(0));
-		magnitude=Math.sqrt(magnitude);
+		double angle = (joystick.getDirectionDegrees()/360.0) + 0.5;
+		double magnitude = joystick.getMagnitude();
 
 		if (Math.abs(magnitude) < DEAD_ZONE) {
 			magnitude = 0;
 		}
 
-		
+		if (magnitude > 1.0 ){
+			magnitude = 1.0;
+		}
 		
 
 		drive.polar (magnitude, angle);
