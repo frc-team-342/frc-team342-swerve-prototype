@@ -1,5 +1,6 @@
 package org.usfirst.frc.team342.swerve_prototype.commands;
 
+import org.usfirst.frc.team342.swerve_prototype.RobotMap;
 import org.usfirst.frc.team342.swerve_prototype.subsystems.Drivesystem;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -17,7 +18,7 @@ private Drivesystem drive;
 	
 	public DriveWithJoystick (){
 		drive = Drivesystem.getInstance();
-		joystick = new Joystick(JOY_STICK);
+		joystick = new Joystick(RobotMap.JoystickPort);
 		
 
 		requires(drive);

@@ -24,6 +24,6 @@ public static final int frturn=5;
 public static final int brturn=6;
 public static final int blturn=7;
 public static final int flturn=8;
-
+public static final int JoystickPort=0;
 
 }
