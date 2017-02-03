@@ -23,16 +23,16 @@ public class Robot extends IterativeRobot {
 
 
 	private OI oi;
-	private CamraSystem camControl;
+	
 
     Command autonomousCommand;
     SendableChooser chooser;
     
-    Command rotateCamera;
+
     
     public Robot(){
     	oi = OI.getInstance();
-    	camControl = CamraSystem.getInstance();
+    	
     }
     
     /**
@@ -99,7 +99,7 @@ public class Robot extends IterativeRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         if (autonomousCommand != null) autonomousCommand.cancel();
-        rotateCamera = new RotateCamera();
+        
     }
 
     /**
@@ -107,7 +107,6 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        rotateCamera.start();
     }
     
     /**
