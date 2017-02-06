@@ -7,7 +7,11 @@
 	<classpathentry exported="true" kind="var" path="opencv" sourcepath="opencv.sources"/>
 	<classpathentry exported="true" kind="var" path="cscore" sourcepath="cscore.sources"/>
 	<classpathentry exported="true" kind="var" path="USERLIBS_DIR/navx_frc.jar"/>
-	<classpathentry kind="var" path="USERLIBS_DIR/CTRLib.jar"/>
+	<classpathentry exported="true" kind="var" path="USERLIBS_DIR/CTRLib.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/Public/Documents/CTRE%20Stuff/CTRLib-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="C:/Users/Nick&apos;s Programming/wpilib/user/java/lib/CTRLib.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

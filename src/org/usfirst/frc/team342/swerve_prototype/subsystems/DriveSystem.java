@@ -1,6 +1,7 @@
 package org.usfirst.frc.team342.swerve_prototype.subsystems;
 
 import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -12,8 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveSystem extends Subsystem {
 	
 	private static final DriveSystem instance = new DriveSystem();
-
-	private static boolean doneRotating;
 	
 	private static CANTalon frontRightDrive;
 	private static CANTalon backRightDrive;
@@ -30,17 +29,11 @@ public class DriveSystem extends Subsystem {
 	private static int blRotationAmount;
 	private static int flRotationAmount;
 	
-	private static int frontRightOffset;
-	private static int backRightOffset;
-	private static int backLeftOffset;
-	private static int frontLeftOffset;
-	
 	private static AHRS navx;
 	
 	public DriveSystem(){
 		
 	}
-	
 	
 	@Override
 	protected void initDefaultCommand() {
@@ -59,8 +52,6 @@ public class DriveSystem extends Subsystem {
 		backLeftRotation = new CANTalon(7);
 		frontLeftRotation = new CANTalon(8);
 		
-		doneRotating = false;
-		
 		setUpRotationMotors();
 	
 		frRotationAmount = 0;
@@ -73,26 +64,22 @@ public class DriveSystem extends Subsystem {
 	}
 	
 	public void setUpRotationMotors(){
-		
+		frontRightRotation.reverseOutput(true);
 		frontRightRotation.changeControlMode(TalonControlMode.Position);
-		frontRightRotation.setP(1.0);
-		frontRightRotation.setAllowableClosedLoopErr(15);
-		frontRightRotation.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Absolute);
+		frontRightRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		
+		backRightRotation.reverseOutput(true);
 		backRightRotation.changeControlMode(TalonControlMode.Position);
-		backRightRotation.setP(1.0);
-		backRightRotation.setAllowableClosedLoopErr(15);
-		backRightRotation.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Absolute);
+		backRightRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		
+		backLeftRotation.reverseOutput(true);
 		backLeftRotation.changeControlMode(TalonControlMode.Position);
-		backLeftRotation.setP(1.0);
-		backLeftRotation.setAllowableClosedLoopErr(15);
-		backLeftRotation.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Absolute);
+		backLeftRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		backLeftRotation.reverseSensor(true);
 		
+		frontLeftRotation.reverseOutput(true);
 		frontLeftRotation.changeControlMode(TalonControlMode.Position);
-		frontLeftRotation.setP(1.0);
-		frontLeftRotation.setAllowableClosedLoopErr(1);
-		frontLeftRotation.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Absolute);
+		frontLeftRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		
 	}
 	
@@ -106,40 +93,32 @@ public class DriveSystem extends Subsystem {
 		SmartDashboard.putNumber("BL Rotation Amount", blRotationAmount);
 		SmartDashboard.putNumber("FL Rotation Amount", flRotationAmount);
 		
-		SmartDashboard.putNumber("FR enc val", frontRightRotation.getEncPosition());
-		SmartDashboard.putNumber("BR enc val", backRightRotation.getEncPosition());
-		SmartDashboard.putNumber("BL enc val", backLeftRotation.getEncPosition());
-		SmartDashboard.putNumber("FL enc val", frontLeftRotation.getEncPosition());
-		
-		checkEncoders();
-		
-		
-		frontRightRotation.set((angle / Math.PI));
-		backRightRotation.set((angle / Math.PI));
-		backLeftRotation.set((angle / Math.PI));
-		frontLeftRotation.set((angle / Math.PI));
-		
-		
-		//setAngle(1);
+		SmartDashboard.putNumber("FR enc val", frontRightRotation.getPulseWidthPosition());
+		SmartDashboard.putNumber("BR enc val", backRightRotation.getPulseWidthPosition());
+		SmartDashboard.putNumber("BL enc val", backLeftRotation.getPulseWidthPosition());
+		SmartDashboard.putNumber("FL enc val", frontLeftRotation.getPulseWidthPosition());
 		
 	}
 	
-	public void checkEncoders(){
-		if(frontRightRotation.getEncPosition() > 4096 || frontRightRotation.getEncPosition() < -4096){
-			resetEncoder(1);
-			frRotationAmount += 1;
-		}else if(backRightRotation.getEncPosition() > 4096 || backRightRotation.getEncPosition() < -4096){
-			resetEncoder(2);
-			brRotationAmount += 1;
-		}else if(backLeftRotation.getEncPosition() > 4096 || backLeftRotation.getEncPosition() < -4096){
-			resetEncoder(3);
-			blRotationAmount += 1;
-		}else if(frontLeftRotation.getEncPosition() > 4096 || frontLeftRotation.getEncPosition() < -4096){
-			resetEncoder(4);
-			flRotationAmount += 1;
+	public void setAngle(double angle, CANTalon talon){
+		double actual = talon.getPosition();
+		
+		if(actual > 0){
+			angle = angle + Math.floor(actual);
+			if(Math.abs(actual - angle) > 0.5){
+				angle += 1;
+			}
+		}else{
+			angle = angle - Math.floor(actual);
+			if(Math.abs(angle - actual) > 0.5){
+				angle -= 1;
+			}
 		}
+		
+		talon.set(angle);
+		
 	}
-	
+
 	public void stopDriveMotors(){
 		frontRightDrive.set(0);
 		backRightDrive.set(0);
@@ -147,22 +126,11 @@ public class DriveSystem extends Subsystem {
 		frontLeftDrive.set(0);
 	}
 	
-	public void setAngle(double goal){
-		double angle = 1 / (goal * (512/45));
-		
-		if(frontRightRotation.getEncPosition() != angle){
-			frontRightRotation.set(angle);
-		}
-		if(backRightRotation.getEncPosition() != angle){
-			backRightRotation.set(angle);
-		}
-		if(backLeftRotation.getEncPosition() != angle){
-			backLeftRotation.set(angle);
-		}
-		if(frontLeftRotation.getEncPosition() != angle){
-			frontLeftRotation.set(angle);
-		}
-		
+	public void stopAngleMotors(){
+		frontRightRotation.set(0);
+		frontLeftRotation.set(0);
+		backLeftRotation.set(0);
+		backRightRotation.set(0);
 	}
 	
 	public void stop(){
@@ -177,40 +145,8 @@ public class DriveSystem extends Subsystem {
 		backRightDrive.set(0);
 	}
 	
-	public void resetEncoder(int motor){
-		switch(motor){
-		case 1: frontRightRotation.setEncPosition(0);
-				break;
-		case 2: backRightRotation.setEncPosition(0);
-				break;
-		case 3: backLeftRotation.setEncPosition(0);
-				break;
-		case 4: frontLeftRotation.setEncPosition(0);
-				break;
-		}
-	}
-	
-	public int getEncoder(int motor){
-		int out = 0;
-		
-		switch(motor){
-			case 1: out = frontRightRotation.getEncPosition();
-					break;
-			case 2: out = backRightRotation.getEncPosition();
-					break;
-			case 3: out = backLeftRotation.getEncPosition();
-					break;
-			case 4: out = frontLeftRotation.getEncPosition();
-					break;
-		}
-		
-		return out;
-	}
-	
-	
 	public static DriveSystem getInstance(){
 		return instance;
 	}
 	
-
 }
