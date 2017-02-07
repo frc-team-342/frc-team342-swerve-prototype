@@ -92,8 +92,7 @@ public class Drivesystem extends Subsystem {
 			BRTurn.set(FRTurn.getPosition());
 			BLTurn.set(BLTurn.getPosition());
 
-		}
-		else {
+		} else {
 			// not position mode
 			FRTurn.set(0.0);
 			BRTurn.set(0.0);
@@ -101,12 +100,10 @@ public class Drivesystem extends Subsystem {
 			FRTurn.set(0.0);
 
 		}
-	
-	
-	
+
 	}
 
-	public void StopTurn(){
+	public void StopTurn() {
 		if (FRDrive.getControlMode() == CANTalon.TalonControlMode.Position
 				&& FRDrive.getControlMode() == BRDrive.getControlMode()
 				&& FRDrive.getControlMode() == FLDrive.getControlMode()
@@ -117,8 +114,7 @@ public class Drivesystem extends Subsystem {
 			BRDrive.set(FRDrive.getPosition());
 			BLDrive.set(BLDrive.getPosition());
 
-		}
-		else {
+		} else {
 			// not position mode
 			FRTurn.set(0.0);
 			BRDrive.set(0.0);
@@ -126,7 +122,65 @@ public class Drivesystem extends Subsystem {
 			FRDrive.set(0.0);
 
 		}
+	}
+	public void DWJmanup(double angle, double speed, double rotation, boolean FelO){
+		//FeLO = field orientation
+		// angles
+		double FRWheel;
+		double FLWheel;
+		double BRWheel;
+		double BLWheel;
+		
+		// Speeds
+		double FRSpeed;
+		double FLSpeed;
+		double BRSpeed;
+		double BLSpeed;
+		
+		// From the NavX
+		double GyRo = 0;
+		
+		// setting individual wheels angle
+		FRWheel = angle;
+		FLWheel = angle;
+		BRWheel = angle;
+		BLWheel = angle;
+		
+		// setting individual speed angle
+		FRSpeed = speed;
+		FLSpeed = speed;
+		BRSpeed = speed;
+		BLSpeed = speed;
 	
+		// setting angle
+		setAngle(FRWheel, FRTurn);
+		setAngle(FLWheel, FLTurn);
+		setAngle(BRWheel, BRTurn);
+		setAngle(BLWheel, BLTurn);
+		
+		
+		FRDrive.set(FRSpeed);
+		FLDrive.set(FLSpeed);
+		BRDrive.set(BRSpeed);
+		BLDrive.set(BLSpeed);
+		}
+	public void setAngle(double Angle, CANTalon Talon){
 		
 	}
-}
+
+	public void Spinning(double rotation){
+		setAngle(0.375, FRTurn);
+		setAngle(0.125, FLTurn);
+		setAngle(0.625, BRTurn);
+		setAngle(0.375, BLTurn);
+		
+		
+		//for rotation
+		FRDrive.set(rotation);
+		BRDrive.set(rotation);
+		BLDrive.set(rotation);
+		FLDrive.set(rotation);
+	}
+	
+	}
+
