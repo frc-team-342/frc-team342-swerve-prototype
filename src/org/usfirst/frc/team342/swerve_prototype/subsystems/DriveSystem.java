@@ -61,32 +61,61 @@ public class DriveSystem extends Subsystem {
 		
 		navx = new AHRS(SPI.Port.kMXP);
 		navx.startLiveWindowMode();
+		
+		SmartDashboard.putBoolean("initialized:", true);
 	}
 	
 	public void setUpRotationMotors(){
-		frontRightRotation.reverseOutput(true);
-		frontRightRotation.changeControlMode(TalonControlMode.Position);
+		
+		SmartDashboard.putBoolean("rotation motors setup:", true);
+		
+		frontRightRotation.disable();
 		frontRightRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		frontRightRotation.changeControlMode(TalonControlMode.Position);
+		frontRightRotation.setP(0.3);
+		frontRightRotation.reverseSensor(true);
+		frontRightRotation.reverseOutput(true);
+		frontRightRotation.setEncPosition(frontRightRotation.getPulseWidthPosition() % 4096);
+		frontRightRotation.enable();
 		
-		backRightRotation.reverseOutput(true);
+		
+		//put these in the right order... we dont know exactly what, but it's not right
+		backRightRotation.disable();
+		backRightRotation.reverseSensor(true);
+		backRightRotation.setP(0.3);
 		backRightRotation.changeControlMode(TalonControlMode.Position);
+		backRightRotation.setEncPosition(frontRightRotation.getPulseWidthPosition() % 4096);
 		backRightRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		backRightRotation.enable();
 		
-		backLeftRotation.reverseOutput(true);
-		backLeftRotation.changeControlMode(TalonControlMode.Position);
-		backLeftRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		backLeftRotation.disable();
 		backLeftRotation.reverseSensor(true);
+		backLeftRotation.setP(0.3);
+		backLeftRotation.changeControlMode(TalonControlMode.Position);
+		backLeftRotation.setEncPosition(frontRightRotation.getPulseWidthPosition() % 4096);
+		backLeftRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		backLeftRotation.enable();
+		backLeftRotation.reverseOutput(true);
 		
-		frontLeftRotation.reverseOutput(true);
+		frontLeftRotation.disable();
+		frontLeftRotation.reverseSensor(true);
+		frontLeftRotation.setP(0.3);
 		frontLeftRotation.changeControlMode(TalonControlMode.Position);
+		frontLeftRotation.setEncPosition(frontRightRotation.getPulseWidthPosition() % 4096);
 		frontLeftRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		frontLeftRotation.enable();
 		
 	}
 	
 	public void driveWithJoystick(double x, double y, double z, double angle){
+		
+		angle = (angle / 360)  + 0.5;
+		
 		SmartDashboard.putNumber("JoyStick X:", x);
 		SmartDashboard.putNumber("Joystick Y:", y);
 		SmartDashboard.putNumber("Joystick Angle:", angle);
+		
+		SmartDashboard.putNumber("WHAT?", frontRightRotation.getPosition());
 		
 		SmartDashboard.putNumber("FR Rotation Amount", frRotationAmount);
 		SmartDashboard.putNumber("BR Rotation Amount", brRotationAmount);
@@ -98,6 +127,9 @@ public class DriveSystem extends Subsystem {
 		SmartDashboard.putNumber("BL enc val", backLeftRotation.getPulseWidthPosition());
 		SmartDashboard.putNumber("FL enc val", frontLeftRotation.getPulseWidthPosition());
 		
+		
+		setAngle(angle, frontRightRotation);
+		
 	}
 	
 	public void setAngle(double angle, CANTalon talon){
@@ -105,15 +137,24 @@ public class DriveSystem extends Subsystem {
 		
 		if(actual > 0){
 			angle = angle + Math.floor(actual);
-			if(Math.abs(actual - angle) > 0.5){
-				angle += 1;
-			}
+			
 		}else{
-			angle = angle - Math.floor(actual);
-			if(Math.abs(angle - actual) > 0.5){
-				angle -= 1;
+			angle = 1 - angle;
+			angle = angle + Math.ceil(actual);
+			
+		}
+		
+			
+		if(Math.abs(actual - angle) > 0.5){
+			if(angle > actual){
+				angle = angle + 1;
+			}else{
+				angle = angle - 1;
 			}
 		}
+		
+		SmartDashboard.putNumber("angle:", angle);
+		SmartDashboard.putNumber("Actual:", actual);
 		
 		talon.set(angle);
 		
