@@ -14,6 +14,8 @@ public class DriveSystem extends Subsystem {
 	
 	private static final DriveSystem instance = new DriveSystem();
 	
+	private static double test;
+	
 	private static CANTalon frontRightDrive;
 	private static CANTalon backRightDrive;
 	private static CANTalon backLeftDrive;
@@ -79,13 +81,13 @@ public class DriveSystem extends Subsystem {
 		frontRightRotation.enable();
 		
 		
-		//put these in the right order... we dont know exactly what, but it's not right
+		//put these in the right order... we don't know exactly what, but it's not right
 		backRightRotation.disable();
+		backRightRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		backRightRotation.changeControlMode(TalonControlMode.Position);
 		backRightRotation.reverseSensor(true);
 		backRightRotation.setP(0.3);
-		backRightRotation.changeControlMode(TalonControlMode.Position);
 		backRightRotation.setEncPosition(frontRightRotation.getPulseWidthPosition() % 4096);
-		backRightRotation.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		backRightRotation.enable();
 		
 		backLeftRotation.disable();
@@ -109,13 +111,11 @@ public class DriveSystem extends Subsystem {
 	
 	public void driveWithJoystick(double x, double y, double z, double angle){
 		
-		angle = (angle / 360)  + 0.5;
+		angle = (Math.abs(angle + 360) % 360) / 360;
 		
 		SmartDashboard.putNumber("JoyStick X:", x);
 		SmartDashboard.putNumber("Joystick Y:", y);
 		SmartDashboard.putNumber("Joystick Angle:", angle);
-		
-		SmartDashboard.putNumber("WHAT?", frontRightRotation.getPosition());
 		
 		SmartDashboard.putNumber("FR Rotation Amount", frRotationAmount);
 		SmartDashboard.putNumber("BR Rotation Amount", brRotationAmount);
@@ -127,29 +127,28 @@ public class DriveSystem extends Subsystem {
 		SmartDashboard.putNumber("BL enc val", backLeftRotation.getPulseWidthPosition());
 		SmartDashboard.putNumber("FL enc val", frontLeftRotation.getPulseWidthPosition());
 		
-		
 		setAngle(angle, frontRightRotation);
 		
 	}
 	
 	public void setAngle(double angle, CANTalon talon){
+		SmartDashboard.putNumber("Angle Before:", angle);
 		double actual = talon.getPosition();
 		
 		if(actual > 0){
 			angle = angle + Math.floor(actual);
-			
 		}else{
-			angle = 1 - angle;
+			angle = angle - 1;
 			angle = angle + Math.ceil(actual);
-			
 		}
 		
+		SmartDashboard.putNumber("Angle Mid", angle);
 			
 		if(Math.abs(actual - angle) > 0.5){
 			if(angle > actual){
-				angle = angle + 1;
+				angle -= 1;
 			}else{
-				angle = angle - 1;
+				angle += 1;
 			}
 		}
 		
