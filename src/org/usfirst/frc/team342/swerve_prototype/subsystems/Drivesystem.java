@@ -3,6 +3,7 @@ package org.usfirst.frc.team342.swerve_prototype.subsystems;
 import org.usfirst.frc.team342.swerve_prototype.RobotMap;
 
 import com.ctre.CANTalon;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -10,14 +11,16 @@ public class Drivesystem extends Subsystem {
 
 	private static final Drivesystem instance = new Drivesystem();
 
-	private CANTalon FRDrive;
-	private CANTalon FRTurn;
-	private CANTalon FLDrive;
-	private CANTalon FLTurn;
-	private CANTalon BRDrive;
-	private CANTalon BRTurn;
-	private CANTalon BLDrive;
-	private CANTalon BLTurn;
+		private CANTalon FRDrive;
+		private CANTalon FRTurn;
+		private CANTalon FLDrive;
+		private CANTalon FLTurn;
+		private CANTalon BRDrive;
+		private CANTalon BRTurn;
+		private CANTalon BLDrive;
+		private CANTalon BLTurn;
+
+		private AHRS NavX;
 
 	private Drivesystem() {
 
@@ -87,17 +90,17 @@ public class Drivesystem extends Subsystem {
 				&& FRTurn.getControlMode() == FLTurn.getControlMode()
 				&& FRTurn.getControlMode() == BLTurn.getControlMode()) {
 			// position mode
-			FRTurn.set(FRTurn.getPosition());
-			FLTurn.set(FLTurn.getPosition());
-			BRTurn.set(FRTurn.getPosition());
-			BLTurn.set(BLTurn.getPosition());
+				FRTurn.set(FRTurn.getPosition());
+				FLTurn.set(FLTurn.getPosition());
+				BRTurn.set(FRTurn.getPosition());
+				BLTurn.set(BLTurn.getPosition());
 
 		} else {
 			// not position mode
-			FRTurn.set(0.0);
-			BRTurn.set(0.0);
-			FLTurn.set(0.0);
-			FRTurn.set(0.0);
+				FRTurn.set(0.0);
+				BRTurn.set(0.0);
+				FLTurn.set(0.0);
+				FRTurn.set(0.0);
 
 		}
 
@@ -109,78 +112,95 @@ public class Drivesystem extends Subsystem {
 				&& FRDrive.getControlMode() == FLDrive.getControlMode()
 				&& FRDrive.getControlMode() == BLDrive.getControlMode()) {
 			// position mode
-			FRDrive.set(FRDrive.getPosition());
-			FLDrive.set(FLDrive.getPosition());
-			BRDrive.set(FRDrive.getPosition());
-			BLDrive.set(BLDrive.getPosition());
+				FRDrive.set(FRDrive.getPosition());
+				FLDrive.set(FLDrive.getPosition());
+				BRDrive.set(FRDrive.getPosition());
+				BLDrive.set(BLDrive.getPosition());
 
 		} else {
 			// not position mode
-			FRTurn.set(0.0);
-			BRDrive.set(0.0);
-			FLDrive.set(0.0);
-			FRDrive.set(0.0);
+				FRTurn.set(0.0);
+				BRDrive.set(0.0);
+				FLDrive.set(0.0);
+				FRDrive.set(0.0);
 
 		}
 	}
-	public void DWJmanup(double angle, double speed, double rotation, boolean FelO){
-		//FeLO = field orientation
+
+	public void DWJmanup(double angle, double speed, double rotation, boolean FelO) {
+		// FeLO = field orientation
 		// angles
 		double FRWheel;
 		double FLWheel;
 		double BRWheel;
 		double BLWheel;
-		
+
 		// Speeds
 		double FRSpeed;
 		double FLSpeed;
 		double BRSpeed;
 		double BLSpeed;
-		
+
 		// From the NavX
-		double GyRo = 0;
-		
+		double GyRo = NavX.getAngle();
+
 		// setting individual wheels angle
 		FRWheel = angle;
 		FLWheel = angle;
 		BRWheel = angle;
 		BLWheel = angle;
-		
+
 		// setting individual speed angle
 		FRSpeed = speed;
 		FLSpeed = speed;
 		BRSpeed = speed;
 		BLSpeed = speed;
-	
+
 		// setting angle
 		setAngle(FRWheel, FRTurn);
 		setAngle(FLWheel, FLTurn);
 		setAngle(BRWheel, BRTurn);
 		setAngle(BLWheel, BLTurn);
-		
-		
+
+		// setting talons to speed
 		FRDrive.set(FRSpeed);
 		FLDrive.set(FLSpeed);
 		BRDrive.set(BRSpeed);
 		BLDrive.set(BLSpeed);
-		}
-	public void setAngle(double Angle, CANTalon Talon){
-		
 	}
 
-	public void Spinning(double rotation){
+	public void setAngle(double Angle, CANTalon Talon) {
+
+	}
+
+	public void Spinning(double rotation) {
 		setAngle(0.375, FRTurn);
 		setAngle(0.125, FLTurn);
 		setAngle(0.625, BRTurn);
 		setAngle(0.875, BLTurn);
-		
-		
-		//for rotation
+
+		// for rotation
 		FRDrive.set(rotation);
 		BRDrive.set(rotation);
 		BLDrive.set(rotation);
 		FLDrive.set(rotation);
 	}
+
+	public void ResetGyro() {
+		NavX.reset();
+	}
+	public void ResetIncoder(CANTalon talon, int offset){
+		//talon.setEncPosition((talon.getPulseWidthPosition() % 4096) + offset);
+		int holdnum = talon.getPulseWidthPosition();
+			if (holdnum > 0){
+			talon.setEncPosition((holdnum % 4096)+ offset);
+		}
+			else{
+			holdnum = holdnum * -1;	
+			holdnum = holdnum % 4096;
+			holdnum = 4096 - holdnum;
+			talon.setEncPosition((holdnum)+ offset);
+			}
 	
 	}
-
+}
