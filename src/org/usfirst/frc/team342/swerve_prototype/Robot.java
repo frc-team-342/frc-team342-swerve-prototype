@@ -2,7 +2,7 @@
 package org.usfirst.frc.team342.swerve_prototype;
 
 import org.usfirst.frc.team342.swerve_prototype.commands.DriveWithJoystick;
-import org.usfirst.frc.team342.swerve_prototype.subsystems.DriveSystem;
+import org.usfirst.frc.team342.swerve_prototype.subsystems.Drivesystem;
 import org.usfirst.frc.team342.swerve_prototype.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -27,13 +27,13 @@ public class Robot extends IterativeRobot {
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 	
-	private DriveSystem drive;
+	private Drivesystem drive;
 	private OI oi;
 	private DriveWithJoystick joydrive;
 
 	
 	public Robot(){
-		drive = DriveSystem.getInstance();
+		drive = Drivesystem.getInstance();
 		oi = OI.getInstance();
 	}
 	

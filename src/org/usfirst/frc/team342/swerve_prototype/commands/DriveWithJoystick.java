@@ -1,42 +1,64 @@
 package org.usfirst.frc.team342.swerve_prototype.commands;
 
 import org.usfirst.frc.team342.swerve_prototype.OI;
-import org.usfirst.frc.team342.swerve_prototype.subsystems.DriveSystem;
+import org.usfirst.frc.team342.swerve_prototype.subsystems.Drivesystem;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class DriveWithJoystick extends Command {
+
+	private static final double DEAD_ZONE = 0.3;
+
+	private Drivesystem drive;
+	private Joystick joystick;
 	
-	private DriveSystem drive;
-	private OI oi;
-	private Joystick joy;
+	public DriveWithJoystick (){
+		drive = Drivesystem.getInstance();
+		joystick = OI.stick;
+		
+		requires(drive);
+	}
 	
 	@Override
 	protected void initialize() {
-		drive = drive.getInstance();
-		oi = oi.getInstance();
-		joy = oi.stick;
+		// TODO Auto-generated method stub
+		
 	}
-
+	
 	@Override
 	protected void execute() {
-		drive.driveWithJoystick(joy.getAxis(AxisType.kX), joy.getAxis(AxisType.kY), joy.getAxis(AxisType.kZ), joy.getDirectionDegrees());
+		// TODO Auto-generated method stub
+		double angle = (Math.abs(joystick.getDirectionDegrees() + 360) % 360) / 360;
+		double magnitude = joystick.getMagnitude();
+
+		if (Math.abs(magnitude) < DEAD_ZONE) {
+			magnitude = 0;
+		}
+
+		if (magnitude > 1.0 ){
+			magnitude = 1.0;
+		}
+		
+		drive.DWJmanup(angle, magnitude, 0, false);
 	}
+	
 
 	@Override
 	protected boolean isFinished() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	protected void end() {
+		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	protected void interrupted() {
+		// TODO Auto-generated method stub
 		
 	}
 
