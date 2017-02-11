@@ -1,8 +1,5 @@
 package org.usfirst.frc.team342.swerve_prototype;
 
-import org.usfirst.frc.team342.swerve_prototype.commands.AngleSet;
-
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -56,8 +53,6 @@ public class OI {
 	
 	private OI(){
 		stick = new Joystick(0);
-		button = new JoystickButton(stick, 1);
-		button.whenPressed(new AngleSet());
 	}
 	
 	

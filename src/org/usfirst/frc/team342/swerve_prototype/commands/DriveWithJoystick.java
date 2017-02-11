@@ -5,6 +5,7 @@ import org.usfirst.frc.team342.swerve_prototype.subsystems.Drivesystem;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveWithJoystick extends Command {
 
@@ -31,16 +32,18 @@ public class DriveWithJoystick extends Command {
 		// TODO Auto-generated method stub
 		double angle = (Math.abs(joystick.getDirectionDegrees() + 360) % 360) / 360;
 		double magnitude = joystick.getMagnitude();
+		double rotation = joystick.getRawAxis(4);
 
 		if (Math.abs(magnitude) < DEAD_ZONE) {
-			magnitude = 0;
+			magnitude = 0;             
 		}
 
 		if (magnitude > 1.0 ){
 			magnitude = 1.0;
 		}
 		
-		drive.DWJmanup(angle, magnitude, 0, false);
+		
+		drive.DWJmanup(angle, magnitude, rotation, false);
 	}
 	
 
@@ -59,7 +62,8 @@ public class DriveWithJoystick extends Command {
 	@Override
 	protected void interrupted() {
 		// TODO Auto-generated method stub
-		
+		drive.StopDrive();
+		drive.StopTurn();
 	}
 
 }
