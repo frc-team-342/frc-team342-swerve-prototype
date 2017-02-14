@@ -5,6 +5,7 @@ import org.usfirst.frc.team342.swerve_prototype.commands.DriveWithJoystick;
 import org.usfirst.frc.team342.swerve_prototype.subsystems.Drivesystem;
 import org.usfirst.frc.team342.swerve_prototype.subsystems.ExampleSubsystem;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;

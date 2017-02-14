@@ -7,8 +7,10 @@ import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.hal.DIOJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivesystem extends Subsystem {
@@ -24,11 +26,14 @@ public class Drivesystem extends Subsystem {
 	private CANTalon BRTurn;
 	private CANTalon BLTurn;
 	private CANTalon FLTurn;
+	
+	private boolean test;
 		
 	private AHRS NavX;
 
 	private Drivesystem() {
 		initializeDriveSystem();
+		
 	}
 
 	@Override
@@ -43,20 +48,23 @@ public class Drivesystem extends Subsystem {
 	
 	public void initializeDriveSystem(){
 		
-		FRDrive = new CANTalon(RobotMap.frdrive);
-		FRTurn = new CANTalon(RobotMap.frturn);
-		BRDrive = new CANTalon(RobotMap.brdrive);
-		BRTurn = new CANTalon(RobotMap.brturn);
-		BLDrive = new CANTalon(RobotMap.bldrive);
-		BLTurn = new CANTalon(RobotMap.blturn);
-		FLDrive = new CANTalon(RobotMap.fldrive);
-		FLTurn = new CANTalon(RobotMap.flturn);
+		FRDrive = new CANTalon(RobotMap.FRDRIVE);
+		FRTurn = new CANTalon(RobotMap.FRTURN);
+		BRDrive = new CANTalon(RobotMap.BRDRIVE);
+		BRTurn = new CANTalon(RobotMap.BRTURN);
+		BLDrive = new CANTalon(RobotMap.BLDRIVE);
+		BLTurn = new CANTalon(RobotMap.BLTURN);
+		FLDrive = new CANTalon(RobotMap.FLDRIVE);
+		FLTurn = new CANTalon(RobotMap.FLTURN);
 		
 		setUpRotationMotors();
 		
 		NavX = new AHRS(SPI.Port.kMXP);
 		NavX.startLiveWindowMode();
-	
+		
+		test = false;
+		SmartDashboard.putBoolean("Info: ", test);
+		
 	}
 	
 	public void setUpRotationMotors(){
@@ -202,28 +210,30 @@ public class Drivesystem extends Subsystem {
 		
 		// From the NavX
 		double GyRo = NavX.getAngle();
+		
 
 		// setting individual wheels angle
-		if((rotation < -0.15 || rotation > 0.15) && speed > 0.15){
+		
+		/*if((rotation < -0.15 || rotation > 0.15) && speed > 0.15){
 			if(angleRad > 0 && angleRad < Math.PI/2){
 			
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(45) * rotation);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(45) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin((Math.PI / 4)) * rotation * -1);
 				FRRotation = (Math.atan(tempX / tempY));
 				FRSpeed = (tempX / Math.sin(FRRotation));
 		
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(135) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(135) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
 				BRRotation = (Math.atan(tempX / tempY));
 				BRSpeed = (tempX / Math.sin(BRRotation));
 			
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(225) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(225) * rotation);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
 				BLRotation = (Math.atan(tempX / tempY));
 				BLSpeed = (tempX / Math.sin(BLRotation));
 			
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(315) * rotation);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(315) * rotation);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
 				FLRotation = (Math.atan(tempX / tempY));
 				FLSpeed = (tempX / Math.sin(FRRotation));
 			
@@ -246,23 +256,23 @@ public class Drivesystem extends Subsystem {
 			
 			}else if(angleRad >= Math.PI/2 && angleRad < Math.PI){
 			
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(45) * rotation);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(45) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin((Math.PI / 4)) * rotation * -1);
 				FRRotation = (Math.atan(tempX / tempY));
 				FRSpeed = (tempX / Math.sin(FRRotation));
 		
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(135) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(135) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
 				BRRotation = (Math.atan(tempX / tempY));
 				BRSpeed = (tempX / Math.sin(BRRotation));
 			
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(225) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(225) * rotation);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
 				BLRotation = (Math.atan(tempX / tempY));
 				BLSpeed = (tempX / Math.sin(BLRotation));
 			
-				tempX = (Math.cos(angleRad) * speed) + (Math.cos(315) * rotation);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(315) * rotation);
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
 				FLRotation = (Math.atan(tempX / tempY));
 				FLSpeed = (tempX / Math.sin(FRRotation));
 			
@@ -285,23 +295,23 @@ public class Drivesystem extends Subsystem {
 			
 			}else if(angle >= Math.PI && angle < ((3 * Math.PI) / 2)){
 			
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(45) * rotation);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(45) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin((Math.PI / 4)) * rotation * -1);
 				FRRotation = (Math.atan(tempX / tempY));
 				FRSpeed = (tempX / Math.sin(FRRotation));
 		
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(135) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(135) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
 				BRRotation = (Math.atan(tempX / tempY));
 				BRSpeed = (tempX / Math.sin(BRRotation));
 			
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(225) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(225) * rotation);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
 				BLRotation = (Math.atan(tempX / tempY));
 				BLSpeed = (tempX / Math.sin(BLRotation));
 			
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(315) * rotation);
-				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(315) * rotation);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
 				FLRotation = (Math.atan(tempX / tempY));
 				FLSpeed = (tempX / Math.sin(FRRotation));
 			
@@ -324,23 +334,23 @@ public class Drivesystem extends Subsystem {
 			
 			}else if(angle >= ((3 * Math.PI) / 2) && angle < (2 * Math.PI)){
 			
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(45) * rotation);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(45) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin((Math.PI / 4)) * rotation * -1);
 				FRRotation = (Math.atan(tempX / tempY));
 				FRSpeed = (tempX / Math.sin(FRRotation));
 		
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(135) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(135) * rotation * -1);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
 				BRRotation = (Math.atan(tempX / tempY));
 				BRSpeed = (tempX / Math.sin(BRRotation));
 			
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(225) * rotation * -1);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(225) * rotation);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
 				BLRotation = (Math.atan(tempX / tempY));
 				BLSpeed = (tempX / Math.sin(BLRotation));
 			
-				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(315) * rotation);
-				tempY = (Math.sin(angleRad) * speed) + (Math.sin(315) * rotation);
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
 				FLRotation = (Math.atan(tempX / tempY));
 				FLSpeed = (tempX / Math.sin(FRRotation));
 			
@@ -362,7 +372,7 @@ public class Drivesystem extends Subsystem {
 				//BLDrive.set(BLSpeed);
 				
 			}else{
-				SmartDashboard.putString("Info: ", "This is not supposed to show up, if it does, then the code is broken.");
+				SmartDashboard.putBoolean("Info: ", test);
 				
 			}
 			
@@ -390,6 +400,7 @@ public class Drivesystem extends Subsystem {
 		//FLSpeed = speed;
 		//BRSpeed = speed;
 		//BLSpeed = speed;
+		*/
 		
 		outputInfo();
 		
