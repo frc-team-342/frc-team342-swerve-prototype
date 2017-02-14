@@ -3,36 +3,37 @@ package org.usfirst.frc.team342.swerve_prototype.subsystems;
 import org.usfirst.frc.team342.swerve_prototype.RobotMap;
 
 import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
+import com.ctre.CANTalon.TalonControlMode;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.hal.DIOJNI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivesystem extends Subsystem {
 
 	private static final Drivesystem instance = new Drivesystem();
 
-		private CANTalon FRDrive;
-		private CANTalon FRTurn;
-		private CANTalon FLDrive;
-		private CANTalon FLTurn;
-		private CANTalon BRDrive;
-		private CANTalon BRTurn;
-		private CANTalon BLDrive;
-		private CANTalon BLTurn;
-
-		private AHRS NavX;
+	private CANTalon FRDrive;
+	private CANTalon BRDrive;
+	private CANTalon BLDrive;
+	private CANTalon FLDrive;
+		
+	private CANTalon FRTurn;
+	private CANTalon BRTurn;
+	private CANTalon BLTurn;
+	private CANTalon FLTurn;
+	
+	private boolean test;
+		
+	private AHRS NavX;
 
 	private Drivesystem() {
-
-		FRDrive = new CANTalon(RobotMap.frdrive);
-		FRTurn = new CANTalon(RobotMap.frturn);
-		FLDrive = new CANTalon(RobotMap.frdrive);
-		FLTurn = new CANTalon(RobotMap.flturn);
-		BRDrive = new CANTalon(RobotMap.brdrive);
-		BRTurn = new CANTalon(RobotMap.brturn);
-		BLDrive = new CANTalon(RobotMap.bldrive);
-		BLTurn = new CANTalon(RobotMap.blturn);
-
+		initializeDriveSystem();
+		
 	}
 
 	@Override
@@ -44,9 +45,66 @@ public class Drivesystem extends Subsystem {
 	public static Drivesystem getInstance() {
 		return instance;
 	}
-
-	public void polar(double angle, double maginitude) {
-		// TODO: FIX THIS ITS BROKEN
+	
+	public void initializeDriveSystem(){
+		
+		FRDrive = new CANTalon(RobotMap.FRDRIVE);
+		FRTurn = new CANTalon(RobotMap.FRTURN);
+		BRDrive = new CANTalon(RobotMap.BRDRIVE);
+		BRTurn = new CANTalon(RobotMap.BRTURN);
+		BLDrive = new CANTalon(RobotMap.BLDRIVE);
+		BLTurn = new CANTalon(RobotMap.BLTURN);
+		FLDrive = new CANTalon(RobotMap.FLDRIVE);
+		FLTurn = new CANTalon(RobotMap.FLTURN);
+		
+		setUpRotationMotors();
+		
+		NavX = new AHRS(SPI.Port.kMXP);
+		NavX.startLiveWindowMode();
+		
+		test = false;
+		SmartDashboard.putBoolean("Info: ", test);
+		
+	}
+	
+	public void setUpRotationMotors(){
+		
+		FRTurn.disable();
+		FRTurn.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		FRTurn.changeControlMode(TalonControlMode.Position);
+		FRTurn.setP(0.3);
+		FRTurn.reverseSensor(true);
+		FRTurn.reverseOutput(true);
+		FRTurn.setEncPosition(FRTurn.getPulseWidthPosition() % 4096);
+		FRTurn.enable();
+		
+		BRTurn.disable();
+		BRTurn.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		BRTurn.changeControlMode(TalonControlMode.Position);
+		BRTurn.setP(0.3);
+		BRTurn.reverseSensor(true);
+		BRTurn.reverseOutput(true);
+		BRTurn.setEncPosition(BRTurn.getPulseWidthPosition() % 4096);
+		BRTurn.enable();
+		
+		BLTurn.disable();
+		BLTurn.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		BLTurn.changeControlMode(TalonControlMode.Position);
+		BLTurn.setP(0.3);
+		BLTurn.reverseOutput(true);
+		BLTurn.reverseSensor(true);
+		BLTurn.setEncPosition(BLTurn.getPulseWidthPosition() % 4096);
+		BLTurn.enable();
+		
+		FLTurn.disable();
+		FLTurn.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		FLTurn.changeControlMode(TalonControlMode.Position);
+		FLTurn.setP(0.3);
+		FLTurn.reverseSensor(true);
+		FLTurn.reverseOutput(true);
+		FLTurn.setEncPosition(FLTurn.getPulseWidthPosition() % 4096);
+		FLTurn.enable();
+		
 	}
 
 	public void AngleAdjust(int number, double speed) {
@@ -79,7 +137,6 @@ public class Drivesystem extends Subsystem {
 			BRDrive.set(speed);
 			FLDrive.set(speed);
 			FRDrive.set(speed);
-
 		}
 	}
 
@@ -129,67 +186,267 @@ public class Drivesystem extends Subsystem {
 
 	public void DWJmanup(double angle, double speed, double rotation, boolean FelO) {
 		// FeLO = field orientation
+		
+		// Converting the angle from a number 0.0 to 1.0 to degrees, then to radians.
+		double angleRad = (angle * 360 * Math.PI) / 180;
+		
+		SmartDashboard.putNumber("AngelRaw: ", angle);
+		SmartDashboard.putNumber("AngleRad: ", angleRad);
+		
 		// angles
-		double FRWheel;
-		double FLWheel;
-		double BRWheel;
-		double BLWheel;
+		double FRRotation = angle;
+		double FLRotation = angle;
+		double BRRotation = angle;
+		double BLRotation = angle;
+		
+		double tempX = 0;
+		double tempY = 0;
 
 		// Speeds
-		double FRSpeed;
-		double FLSpeed;
-		double BRSpeed;
-		double BLSpeed;
-
+		double FRSpeed = speed;
+		double FLSpeed = speed;
+		double BRSpeed = speed;
+		double BLSpeed = speed;
+		
 		// From the NavX
 		double GyRo = NavX.getAngle();
+		
 
 		// setting individual wheels angle
-		FRWheel = angle;
-		FLWheel = angle;
-		BRWheel = angle;
-		BLWheel = angle;
+		
+		/*if((rotation < -0.15 || rotation > 0.15) && speed > 0.15){
+			if(angleRad > 0 && angleRad < Math.PI/2){
+			
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin((Math.PI / 4)) * rotation * -1);
+				FRRotation = (Math.atan(tempX / tempY));
+				FRSpeed = (tempX / Math.sin(FRRotation));
+		
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
+				BRRotation = (Math.atan(tempX / tempY));
+				BRSpeed = (tempX / Math.sin(BRRotation));
+			
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
+				BLRotation = (Math.atan(tempX / tempY));
+				BLSpeed = (tempX / Math.sin(BLRotation));
+			
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
+				FLRotation = (Math.atan(tempX / tempY));
+				FLSpeed = (tempX / Math.sin(FRRotation));
+			
+				FRRotation = (((180 / Math.PI) * FRRotation) / 360);
+				BRRotation = (((180 / Math.PI) * BRRotation) / 360);
+				BLRotation = (((180 / Math.PI) * BLRotation) / 360);
+				FLRotation = (((180 / Math.PI) * FLRotation) / 360);
+				
+				// setting angle
+				setAngle(FRRotation, FRTurn);
+				setAngle(BRRotation, BRTurn);
+				setAngle(BLRotation, BLTurn);
+				setAngle(FLRotation, FLTurn);
 
+				// setting talons to speed
+				//FRDrive.set(FRSpeed);
+				//FLDrive.set(FLSpeed);
+				//BRDrive.set(BRSpeed);
+				//BLDrive.set(BLSpeed);
+			
+			}else if(angleRad >= Math.PI/2 && angleRad < Math.PI){
+			
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin((Math.PI / 4)) * rotation * -1);
+				FRRotation = (Math.atan(tempX / tempY));
+				FRSpeed = (tempX / Math.sin(FRRotation));
+		
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
+				BRRotation = (Math.atan(tempX / tempY));
+				BRSpeed = (tempX / Math.sin(BRRotation));
+			
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
+				BLRotation = (Math.atan(tempX / tempY));
+				BLSpeed = (tempX / Math.sin(BLRotation));
+			
+				tempX = (Math.cos(angleRad) * speed) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
+				FLRotation = (Math.atan(tempX / tempY));
+				FLSpeed = (tempX / Math.sin(FRRotation));
+			
+				FRRotation = (((180 / Math.PI) * FRRotation) / 360);
+				BRRotation = (((180 / Math.PI) * BRRotation) / 360);
+				BLRotation = (((180 / Math.PI) * BLRotation) / 360);
+				FLRotation = (((180 / Math.PI) * FLRotation) / 360);
+				
+				// setting angle
+				setAngle(FRRotation, FRTurn);
+				setAngle(BRRotation, BRTurn);
+				setAngle(BLRotation, BLTurn);
+				setAngle(FLRotation, FLTurn);
+
+				// setting talons to speed
+				//FRDrive.set(FRSpeed);
+				//FLDrive.set(FLSpeed);
+				//BRDrive.set(BRSpeed);
+				//BLDrive.set(BLSpeed);
+			
+			}else if(angle >= Math.PI && angle < ((3 * Math.PI) / 2)){
+			
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin((Math.PI / 4)) * rotation * -1);
+				FRRotation = (Math.atan(tempX / tempY));
+				FRSpeed = (tempX / Math.sin(FRRotation));
+		
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
+				BRRotation = (Math.atan(tempX / tempY));
+				BRSpeed = (tempX / Math.sin(BRRotation));
+			
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
+				BLRotation = (Math.atan(tempX / tempY));
+				BLSpeed = (tempX / Math.sin(BLRotation));
+			
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed * -1) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
+				FLRotation = (Math.atan(tempX / tempY));
+				FLSpeed = (tempX / Math.sin(FRRotation));
+			
+				FRRotation = (((180 / Math.PI) * FRRotation) / 360);
+				BRRotation = (((180 / Math.PI) * BRRotation) / 360);
+				BLRotation = (((180 / Math.PI) * BLRotation) / 360);
+				FLRotation = (((180 / Math.PI) * FLRotation) / 360);
+				
+				// setting angle
+				setAngle(FRRotation, FRTurn);
+				setAngle(BRRotation, BRTurn);
+				setAngle(BLRotation, BLTurn);
+				setAngle(FLRotation, FLTurn);
+
+				// setting talons to speed
+				//FRDrive.set(FRSpeed);
+				//FLDrive.set(FLSpeed);
+				//BRDrive.set(BRSpeed);
+				//BLDrive.set(BLSpeed);
+			
+			}else if(angle >= ((3 * Math.PI) / 2) && angle < (2 * Math.PI)){
+			
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos((Math.PI / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin((Math.PI / 4)) * rotation * -1);
+				FRRotation = (Math.atan(tempX / tempY));
+				FRSpeed = (tempX / Math.sin(FRRotation));
+		
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((3 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((3 * Math.PI) / 4)) * rotation * -1);
+				BRRotation = (Math.atan(tempX / tempY));
+				BRSpeed = (tempX / Math.sin(BRRotation));
+			
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((5 * Math.PI) / 4)) * rotation * -1);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((5 * Math.PI) / 4)) * rotation);
+				BLRotation = (Math.atan(tempX / tempY));
+				BLSpeed = (tempX / Math.sin(BLRotation));
+			
+				tempX = (Math.cos(angleRad) * speed * -1) + (Math.cos(((7 * Math.PI) / 4)) * rotation);
+				tempY = (Math.sin(angleRad) * speed) + (Math.sin(((7 * Math.PI) / 4)) * rotation);
+				FLRotation = (Math.atan(tempX / tempY));
+				FLSpeed = (tempX / Math.sin(FRRotation));
+			
+				FRRotation = (((180 / Math.PI) * FRRotation) / 360);
+				BRRotation = (((180 / Math.PI) * BRRotation) / 360);
+				BLRotation = (((180 / Math.PI) * BLRotation) / 360);
+				FLRotation = (((180 / Math.PI) * FLRotation) / 360);
+			
+				// setting angle
+				setAngle(FRRotation, FRTurn);
+				setAngle(BRRotation, BRTurn);
+				setAngle(BLRotation, BLTurn);
+				setAngle(FLRotation, FLTurn);
+
+				// setting talons to speed
+				//FRDrive.set(FRSpeed);
+				//FLDrive.set(FLSpeed);
+				//BRDrive.set(BRSpeed);
+				//BLDrive.set(BLSpeed);
+				
+			}else{
+				SmartDashboard.putBoolean("Info: ", test);
+				
+			}
+			
+		}else if(speed < 0.15 && (rotation < -0.15 || rotation > 0.15)){
+			Spinning(rotation);
+			
+		}else if(speed > 0.15 && (rotation > -0.15 || rotation < 0.15)){
+			
+			// setting angle
+			setAngle(FRRotation, FRTurn);
+			setAngle(BRRotation, BRTurn);
+			setAngle(BLRotation, BLTurn);
+			setAngle(FLRotation, FLTurn);
+
+			// setting talons to speed
+			//FRDrive.set(FRSpeed);
+			//FLDrive.set(FLSpeed);
+			//BRDrive.set(BRSpeed);
+			//BLDrive.set(BLSpeed);
+		}
+		
+		//Commented out to be used in the Statments above due to having a temp value.
 		// setting individual speed angle
-		FRSpeed = speed;
-		FLSpeed = speed;
-		BRSpeed = speed;
-		BLSpeed = speed;
-
-		// setting angle
-		setAngle(FRWheel, FRTurn);
-		setAngle(FLWheel, FLTurn);
-		setAngle(BRWheel, BRTurn);
-		setAngle(BLWheel, BLTurn);
-
-		// setting talons to speed
-		FRDrive.set(FRSpeed);
-		FLDrive.set(FLSpeed);
-		BRDrive.set(BRSpeed);
-		BLDrive.set(BLSpeed);
+		//FRSpeed = speed;
+		//FLSpeed = speed;
+		//BRSpeed = speed;
+		//BLSpeed = speed;
+		*/
+		
+		outputInfo();
+		
 	}
 
-	public void setAngle(double Angle, CANTalon Talon) {
+	public void setAngle(double angle, CANTalon talon){
+		
+		double actual = talon.getPosition();
+		
+		if(actual > 0){
+			angle = angle + Math.floor(actual);
+		}else{
+			angle = angle - 1;
+			angle = angle + Math.ceil(actual);
+		}
+			
+		if(Math.abs(actual - angle) > 0.5){
+			if(angle > actual){
+				angle -= 1;
+			}else{
+				angle += 1;
+			}
+		}
 
+		talon.set(angle);
+		
 	}
-
-	public void Spinning(double rotation) {
+	
+	public void Spinning(double speed) {
 		setAngle(0.375, FRTurn);
 		setAngle(0.125, FLTurn);
 		setAngle(0.625, BRTurn);
 		setAngle(0.875, BLTurn);
 
 		// for rotation
-		FRDrive.set(rotation);
-		BRDrive.set(rotation);
-		BLDrive.set(rotation);
-		FLDrive.set(rotation);
+		//FRDrive.set(speed);
+		//BRDrive.set(speed);
+		//BLDrive.set(speed);
+		//FLDrive.set(speed);
 	}
 
 	public void ResetGyro() {
 		NavX.reset();
 	}
-	public void ResetIncoder(CANTalon talon, int offset){
+	
+	public void ResetEncoder(CANTalon talon, int offset){
 		//talon.setEncPosition((talon.getPulseWidthPosition() % 4096) + offset);
 		int holdnum = talon.getPulseWidthPosition();
 			if (holdnum > 0){
@@ -202,5 +459,14 @@ public class Drivesystem extends Subsystem {
 			talon.setEncPosition((holdnum)+ offset);
 			}
 	
+	}
+	
+	public void outputInfo(){
+		SmartDashboard.putNumber("Gyro:", NavX.getAngle());
+		
+		SmartDashboard.putNumber("FRencPos:", FRTurn.getPosition());
+		SmartDashboard.putNumber("BRencPos:", BRTurn.getPosition());
+		SmartDashboard.putNumber("BLencPos:", BLTurn.getPosition());
+		SmartDashboard.putNumber("FLencPos:", FLTurn.getPosition());
 	}
 }
